@@ -16,6 +16,9 @@ const idInput =
 const passwordInput =
     document.getElementById("password");
 
+const passwordToggleButton =
+    document.getElementById("password-toggle-button");
+
 const nicknameInput =
     document.getElementById("nickname");
 
@@ -37,6 +40,31 @@ function makeFirebaseEmail(userId) {
     );
 
 }
+
+
+// 비밀번호 표시/숨기기 토글
+passwordToggleButton.addEventListener(
+    "click",
+    function() {
+
+        if (passwordInput.type === "password") {
+
+            passwordInput.type = "text";
+
+            passwordToggleButton.textContent =
+                "숨기기";
+
+        } else {
+
+            passwordInput.type = "password";
+
+            passwordToggleButton.textContent =
+                "표시";
+
+        }
+
+    }
+);
 
 
 // 회원가입
