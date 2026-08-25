@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>야르</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <h1>야르</h1>
+
+    <div id="user-area"></div>
+
+    <p>이야기를 자유롭게 나누는 공간입니다.</p>
+
+    <div class="write-button-area">
+        <button id="write-button">글쓰기</button>
+    </div>
+
+    <div>
+        <h3>2026/8/20</h3>
+        <h3>시작일</h3>
+    </div>
+
+    <h2>최신 게시글</h2>
+
+    <input
+        id="search-input"
+        type="text"
+        placeholder="게시글 제목을 검색하세요"
+    >
+
+    <button id="search-button">검색</button>
+
+    <select id="sort-select">
+        <option value="latest">최신순</option>
+        <option value="popular">인기순</option>
+        <option value="views">조회수순</option>
+    </select>
+
+    <div id="post-list"></div>
+
+    <script type="module" src="script.js"></script>
+
+</body>
+
+</html>

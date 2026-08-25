@@ -1,0 +1,212 @@
+body {
+    font-family: Arial, sans-serif;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 30px;
+    background-color: #f5f5f5;
+}
+
+h1 {
+    margin-bottom: 10px;
+}
+
+h2 {
+    margin-top: 30px;
+}
+
+h3 {
+    margin-bottom: 8px;
+}
+
+p {
+    line-height: 1.6;
+}
+
+input {
+    padding: 10px;
+    font-size: 16px;
+    box-sizing: border-box;
+}
+
+textarea {
+    width: 100%;
+    min-height: 250px;
+    padding: 10px;
+    font-size: 16px;
+    box-sizing: border-box;
+    resize: vertical;
+}
+
+button {
+    padding: 8px 14px;
+    margin: 4px;
+    cursor: pointer;
+}
+
+#search-input {
+    width: 300px;
+}
+
+
+/* 게시글 전체 영역 */
+.post-wrapper {
+    position: relative;
+    margin: 6px 0;
+}
+
+
+/* 게시글 제목 테두리 */
+.post-item {
+    position: relative;
+    background-color: white;
+    border: 1px solid #ddd;
+    padding: 4px 8px;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+
+/* 게시글 제목 + 오른쪽 정보 */
+.post-header {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    min-width: 0;
+}
+
+
+/* 게시글 제목 */
+.post-item h3 {
+    cursor: pointer;
+    margin: 4px 0;
+    font-size: 15px;
+
+    flex: 1;
+    min-width: 0;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+
+/* 날짜 + 조회수 영역 */
+.post-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    margin-left: 12px;
+
+    font-size: 12px;
+    line-height: 1.3;
+}
+
+
+/* 날짜 */
+.post-date {
+    white-space: nowrap;
+}
+
+
+/* 조회수 */
+.post-view-count {
+    white-space: nowrap;
+}
+
+
+/* 관리자 게시글 삭제 버튼 */
+.post-delete-button {
+    position: absolute;
+    left: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+
+    margin-left: 8px;
+
+    white-space: nowrap;
+}
+
+
+/* 게시글 상세 */
+#post-detail {
+    background-color: white;
+    border: 1px solid #ddd;
+
+    padding: 25px;
+
+    margin-top: 20px;
+
+    margin-left: 20px;
+    margin-right: 20px;
+
+    box-sizing: border-box;
+}
+
+
+#post-detail h2 {
+    margin-top: 0;
+}
+
+
+#post-detail p {
+    white-space: pre-wrap;
+}
+
+
+#post-detail input {
+    width: 70%;
+}
+
+
+#post-detail h3 {
+    margin-top: 30px;
+}
+
+
+#post-detail div {
+    margin-top: 15px;
+}
+
+
+/* 댓글 입력 영역 */
+.comment-input-area {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+
+.comment-input-area input {
+    flex: 1;
+    min-width: 0;
+}
+
+
+/* 좋아요 영역 */
+.like-area {
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+
+
+.like-area button {
+    margin-left: 4px;
+}
+
+
+.like-count {
+    margin-left: 4px;
+}
+
+
+/* 글쓰기 버튼 */
+.write-button-area {
+    text-align: right;
+    margin-top: 5px;
+    margin-bottom: 10px;
+}
