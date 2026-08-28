@@ -15,15 +15,18 @@
         <!-- 상단 헤더 -->
         <header class="masthead">
 
-            <h1 class="wordmark">야르</h1>
+            <h1 class="wordmark">Yar</h1>
 
-            <div class="search-field">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                <input
-                    id="search-input"
-                    type="text"
-                    placeholder="게시글 제목을 검색하세요"
-                >
+            <div class="header-search">
+                <div class="search-field">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    <input
+                        id="search-input"
+                        type="text"
+                        placeholder="게시글 제목을 검색하세요"
+                    >
+                </div>
+                <button id="search-button" type="button" class="search-submit-button">검색</button>
             </div>
 
             <div class="masthead-actions">
@@ -47,17 +50,9 @@
         <!-- 상단 내비게이션 -->
         <nav class="main-navigation">
 
-            <button type="button" class="selected">전체글</button>
-
-            <div class="navigation-more">
-                <select id="sort-select">
-                    <option value="latest">최신순</option>
-                    <option value="popular">인기순</option>
-                    <option value="views">조회수순</option>
-                </select>
-
-                <button id="search-button" type="button" class="write-button compact">검색</button>
-            </div>
+            <button type="button" class="selected" data-sort="latest">전체글</button>
+            <button type="button" data-sort="latest">최신글</button>
+            <button type="button" data-sort="popular">인기글</button>
 
         </nav>
 
@@ -81,7 +76,7 @@
             <aside class="right-sidebar">
 
                 <div class="welcome-card">
-                    <b>이야기를 자유롭게<br>나누는 공간, 야르</b>
+                    <b>ABCD</b>
                 </div>
 
                 <div class="ranking-card">

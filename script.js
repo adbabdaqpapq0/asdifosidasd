@@ -4,7 +4,8 @@ import {
     collection,
     getDocs,
     deleteDoc,
-    doc
+    doc,
+    getCountFromServer
 } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
 
 import {
@@ -28,8 +29,10 @@ const searchInput =
 const searchButton =
     document.getElementById("search-button");
 
-const sortSelect =
-    document.getElementById("sort-select");
+const navTabButtons =
+    document.querySelectorAll(
+        ".main-navigation [data-sort]"
+    );
 
 const rankingList =
     document.getElementById("ranking-list");
@@ -40,6 +43,9 @@ const rankingUpdated =
 
 // 현재 게시글 목록
 let allPosts = [];
+
+// 현재 정렬 방식 ("latest" | "popular")
+let currentSortType = "latest";
 
 
 // 로그인 상태 확인
@@ -241,6 +247,40 @@ async function loadPosts() {
         );
 
 
+        // 게시글마다 댓글 수를 따로 집계해서 붙여줌
+        await Promise.all(
+            allPosts.map(
+                async function(post) {
+
+                    try {
+
+                        const commentsRef =
+                            collection(
+                                db,
+                                "posts",
+                                post.id,
+                                "comments"
+                            );
+
+                        const countSnapshot =
+                            await getCountFromServer(
+                                commentsRef
+                            );
+
+                        post.commentCount =
+                            countSnapshot.data().count;
+
+                    } catch (error) {
+
+                        post.commentCount = 0;
+
+                    }
+
+                }
+            )
+        );
+
+
         // 기본 정렬은 최신순
         renderPosts();
         renderRanking();
@@ -257,33 +297,41 @@ async function loadPosts() {
 }
 
 
-// 게시글 내용 일부만 미리보기로 잘라주는 함수
-function makeExcerpt(content) {
+// 숫자를 1k, 1m 같은 축약형으로 표시
+function formatCount(number) {
 
-    if (!content) {
+    const count =
+        number || 0;
 
-        return "";
+    if (count >= 1000000) {
 
-    }
+        const value =
+            (count / 1000000)
+                .toFixed(1)
+                .replace(/\.0$/, "");
 
-    const oneLine =
-        content
-            .replace(/\s+/g, " ")
-            .trim();
-
-    if (oneLine.length <= 60) {
-
-        return oneLine;
+        return value + "m";
 
     }
 
-    return oneLine.slice(0, 60) + "…";
+    if (count >= 1000) {
+
+        const value =
+            (count / 1000)
+                .toFixed(1)
+                .replace(/\.0$/, "");
+
+        return value + "k";
+
+    }
+
+    return String(count);
 
 }
 
 
-// 날짜 포맷
-function formatDate(timestamp) {
+// 작성 시각을 'n분 전' 같은 상대 시간으로 표시
+function timeAgo(timestamp) {
 
     if (!timestamp) {
 
@@ -294,23 +342,39 @@ function formatDate(timestamp) {
     const date =
         timestamp.toDate();
 
-    const month =
-        String(date.getMonth() + 1)
-            .padStart(2, "0");
+    const diffSeconds =
+        Math.floor(
+            (Date.now() - date.getTime()) / 1000
+        );
 
-    const day =
-        String(date.getDate())
-            .padStart(2, "0");
+    if (diffSeconds < 60) {
 
-    const hours =
-        String(date.getHours())
-            .padStart(2, "0");
+        return "방금 전";
 
-    const minutes =
-        String(date.getMinutes())
-            .padStart(2, "0");
+    }
 
-    return `${month}.${day} ${hours}:${minutes}`;
+    const diffMinutes =
+        Math.floor(diffSeconds / 60);
+
+    if (diffMinutes < 60) {
+
+        return diffMinutes + "분 전";
+
+    }
+
+    const diffHours =
+        Math.floor(diffMinutes / 60);
+
+    if (diffHours < 24) {
+
+        return diffHours + "시간 전";
+
+    }
+
+    const diffDays =
+        Math.floor(diffHours / 24);
+
+    return diffDays + "일 전";
 
 }
 
@@ -326,18 +390,13 @@ function renderPosts() {
     postList.innerHTML = "";
 
 
-    // 현재 정렬 방식
-    const sortType =
-        sortSelect.value;
-
-
     // 원본 배열을 건드리지 않도록 복사
     const sortedPosts =
         [...allPosts];
 
 
     // 최신순
-    if (sortType === "latest") {
+    if (currentSortType === "latest") {
 
         sortedPosts.sort(
             function(a, b) {
@@ -362,7 +421,7 @@ function renderPosts() {
 
 
     // 인기순
-    else if (sortType === "popular") {
+    else if (currentSortType === "popular") {
 
         sortedPosts.sort(
             function(a, b) {
@@ -374,26 +433,6 @@ function renderPosts() {
                     b.likes || 0;
 
                 return likesB - likesA;
-
-            }
-        );
-
-    }
-
-
-    // 조회수순
-    else if (sortType === "views") {
-
-        sortedPosts.sort(
-            function(a, b) {
-
-                const viewsA =
-                    a.views || 0;
-
-                const viewsB =
-                    b.views || 0;
-
-                return viewsB - viewsA;
 
             }
         );
@@ -462,48 +501,77 @@ function renderPosts() {
             );
 
 
-            const excerptElement =
+            // 작성자 닉네임 + 상대 시간 (ex. 운영자 · 2분 전)
+            const authorLine =
                 document.createElement("p");
 
-            excerptElement.textContent =
-                (post.authorNickname
-                    ? post.authorNickname + " · "
-                    : "") +
-                makeExcerpt(post.content);
+            authorLine.textContent =
+                (post.authorNickname || "익명") +
+                " · " +
+                timeAgo(post.createdAt);
 
 
             postCopy.appendChild(titleElement);
-            postCopy.appendChild(excerptElement);
+            postCopy.appendChild(authorLine);
 
 
-            // 날짜 + 조회수
-            const postMeta =
+            // 댓글 수 · 조회수 · 좋아요 수 (아이콘 포함)
+            const postStats =
                 document.createElement("div");
 
-            postMeta.className =
-                "post-meta";
+            postStats.className =
+                "post-stats";
 
 
-            const dateElement =
+            const commentStat =
                 document.createElement("span");
 
-            dateElement.textContent =
-                formatDate(post.createdAt);
+            commentStat.title =
+                "댓글";
+
+            commentStat.innerHTML =
+                '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>';
+
+            commentStat.append(
+                formatCount(post.commentCount)
+            );
 
 
-            const viewElement =
+            const viewStat =
                 document.createElement("span");
 
-            viewElement.textContent =
-                "조회 " + (post.views || 0);
+            viewStat.title =
+                "조회수";
+
+            viewStat.innerHTML =
+                '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>';
+
+            viewStat.append(
+                formatCount(post.views)
+            );
 
 
-            postMeta.appendChild(dateElement);
-            postMeta.appendChild(viewElement);
+            const likeStat =
+                document.createElement("span");
+
+            likeStat.title =
+                "좋아요";
+
+            likeStat.innerHTML =
+                '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>';
+
+            likeStat.append(
+                formatCount(post.likes)
+            );
+
+
+            postStats.appendChild(commentStat);
+            postStats.appendChild(viewStat);
+            postStats.appendChild(likeStat);
 
 
             postRow.appendChild(postCopy);
-            postRow.appendChild(postMeta);
+            postRow.appendChild(postStats);
 
 
             // 관리자 삭제 버튼 (더보기 자리)
@@ -787,12 +855,35 @@ function renderRanking() {
 }
 
 
-// 정렬 변경
-sortSelect.addEventListener(
-    "change",
-    function() {
+// 상단 탭 (전체글 / 최신글 / 인기글)
+navTabButtons.forEach(
+    function(button) {
 
-        renderPosts();
+        button.addEventListener(
+            "click",
+            function() {
+
+                navTabButtons.forEach(
+                    function(otherButton) {
+
+                        otherButton.classList.remove(
+                            "selected"
+                        );
+
+                    }
+                );
+
+                button.classList.add(
+                    "selected"
+                );
+
+                currentSortType =
+                    button.dataset.sort;
+
+                renderPosts();
+
+            }
+        );
 
     }
 );
