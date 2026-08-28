@@ -505,6 +505,9 @@ function renderPosts() {
             const authorLine =
                 document.createElement("p");
 
+            authorLine.className =
+                "post-author";
+
             authorLine.textContent =
                 (post.authorNickname || "익명") +
                 " · " +
@@ -512,7 +515,6 @@ function renderPosts() {
 
 
             postCopy.appendChild(titleElement);
-            postCopy.appendChild(authorLine);
 
 
             // 댓글 수 · 조회수 · 좋아요 수 (아이콘 포함)
@@ -570,8 +572,22 @@ function renderPosts() {
             postStats.appendChild(likeStat);
 
 
+            // 작성자/시간과 댓글·조회·좋아요를 같은 줄에 배치
+            const postSubline =
+                document.createElement("div");
+
+            postSubline.className =
+                "post-subline";
+
+            postSubline.appendChild(authorLine);
+            postSubline.appendChild(postStats);
+
+
+            postCopy.appendChild(postSubline);
+
+
             postRow.appendChild(postCopy);
-            postRow.appendChild(postStats);
+
 
 
             // 관리자 삭제 버튼 (더보기 자리)
@@ -701,20 +717,7 @@ function renderPosts() {
                         deleteButton
                     );
 
-                } else {
-
-                    // 더보기 칸 높이 유지를 위한 빈 자리
-                    postRow.appendChild(
-                        document.createElement("span")
-                    );
-
                 }
-
-            } else {
-
-                postRow.appendChild(
-                    document.createElement("span")
-                );
 
             }
 
