@@ -1,46 +1,105 @@
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>야르</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="index.css">
 </head>
 
 <body>
 
-    <h1>야르</h1>
+    <div class="square-home">
 
-    <div id="user-area"></div>
+        <!-- 상단 헤더 -->
+        <header class="masthead">
 
-    <p>이야기를 자유롭게 나누는 공간입니다.</p>
+            <h1 class="wordmark">야르</h1>
 
-    <div class="write-button-area">
-        <button id="write-button">글쓰기</button>
+            <div class="search-field">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <input
+                    id="search-input"
+                    type="text"
+                    placeholder="게시글 제목을 검색하세요"
+                >
+            </div>
+
+            <div class="masthead-actions">
+
+                <button type="button" class="notification-button" aria-label="알림">
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                    <i></i>
+                </button>
+
+                <div id="user-area"></div>
+
+                <button id="write-button" type="button" class="write-button compact">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"></path></svg>
+                    <span>글쓰기</span>
+                </button>
+
+            </div>
+
+        </header>
+
+        <!-- 상단 내비게이션 -->
+        <nav class="main-navigation">
+
+            <button type="button" class="selected">전체글</button>
+
+            <div class="navigation-more">
+                <select id="sort-select">
+                    <option value="latest">최신순</option>
+                    <option value="popular">인기순</option>
+                    <option value="views">조회수순</option>
+                </select>
+
+                <button id="search-button" type="button" class="write-button compact">검색</button>
+            </div>
+
+        </nav>
+
+        <div class="community-layout">
+
+            <!-- 왼쪽 게시판 사이드바 -->
+            <aside class="board-sidebar">
+                <div class="board-list">
+                    <button type="button" class="active">전체 게시글</button>
+                </div>
+            </aside>
+
+            <!-- 가운데 게시글 목록 -->
+            <main class="content-column">
+                <section class="discussion-section">
+                    <div class="post-table" id="post-list"></div>
+                </section>
+            </main>
+
+            <!-- 오른쪽 사이드바 -->
+            <aside class="right-sidebar">
+
+                <div class="welcome-card">
+                    <b>이야기를 자유롭게<br>나누는 공간, 야르</b>
+                </div>
+
+                <div class="ranking-card">
+                    <header>
+                        <h2>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path></svg>
+                            인기 게시글
+                        </h2>
+                        <time id="ranking-updated"></time>
+                    </header>
+                    <div id="ranking-list"></div>
+                </div>
+
+            </aside>
+
+        </div>
+
     </div>
-
-    <div>
-        <h3>2026/8/20</h3>
-        <h3>시작일</h3>
-    </div>
-
-    <h2>최신 게시글</h2>
-
-    <input
-        id="search-input"
-        type="text"
-        placeholder="게시글 제목을 검색하세요"
-    >
-
-    <button id="search-button">검색</button>
-
-    <select id="sort-select">
-        <option value="latest">최신순</option>
-        <option value="popular">인기순</option>
-        <option value="views">조회수순</option>
-    </select>
-
-    <div id="post-list"></div>
 
     <script type="module" src="script.js"></script>
 

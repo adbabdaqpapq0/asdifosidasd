@@ -31,6 +31,12 @@ const searchButton =
 const sortSelect =
     document.getElementById("sort-select");
 
+const rankingList =
+    document.getElementById("ranking-list");
+
+const rankingUpdated =
+    document.getElementById("ranking-updated");
+
 
 // 현재 게시글 목록
 let allPosts = [];
@@ -43,17 +49,48 @@ onAuthStateChanged(auth, function(user) {
 
         userArea.innerHTML = "";
 
-        const userText =
-            document.createElement("span");
-
         const userId =
             user.email.split("@")[0];
 
-        userText.textContent =
+        // 로그인 상태 영역 (아바타 + 닉네임 + 로그아웃)
+        const userSummary =
+            document.createElement("div");
+
+        userSummary.className =
+            "user-summary";
+
+
+        const avatarButton =
+            document.createElement("span");
+
+        avatarButton.className =
+            "avatar-button";
+
+        avatarButton.textContent =
+            userId.slice(0, 2).toUpperCase();
+
+        avatarButton.title =
             "로그인: " + userId;
+
+
+        const userName =
+            document.createElement("span");
+
+        userName.className =
+            "user-name";
+
+        userName.textContent =
+            userId;
+
 
         const logoutButton =
             document.createElement("button");
+
+        logoutButton.type =
+            "button";
+
+        logoutButton.className =
+            "logout-button";
 
         logoutButton.textContent =
             "로그아웃";
@@ -82,18 +119,35 @@ onAuthStateChanged(auth, function(user) {
             }
         );
 
-        userArea.appendChild(userText);
-        userArea.appendChild(logoutButton);
+        userSummary.appendChild(avatarButton);
+        userSummary.appendChild(userName);
+        userSummary.appendChild(logoutButton);
+
+        userArea.appendChild(userSummary);
 
         writeButton.style.display =
-            "inline-block";
+            "inline-flex";
 
     } else {
 
         userArea.innerHTML = "";
 
+        // 로그아웃 상태 영역 (로그인 + 회원가입)
+        const authControls =
+            document.createElement("div");
+
+        authControls.className =
+            "auth-controls";
+
+
         const loginButton =
             document.createElement("button");
+
+        loginButton.type =
+            "button";
+
+        loginButton.className =
+            "login-button";
 
         loginButton.textContent =
             "로그인";
@@ -113,6 +167,12 @@ onAuthStateChanged(auth, function(user) {
         const signupButton =
             document.createElement("button");
 
+        signupButton.type =
+            "button";
+
+        signupButton.className =
+            "signup-button";
+
         signupButton.textContent =
             "회원가입";
 
@@ -127,17 +187,17 @@ onAuthStateChanged(auth, function(user) {
         );
 
 
-        userArea.appendChild(
-            loginButton
-        );
+        authControls.appendChild(loginButton);
+        authControls.appendChild(signupButton);
 
-        userArea.appendChild(
-            signupButton
-        );
+        userArea.appendChild(authControls);
 
         writeButton.style.display =
             "none";
     }
+
+    // 로그인 상태가 바뀌면 삭제 버튼 노출 여부도 다시 그려줌
+    renderPosts();
 
 });
 
@@ -183,6 +243,7 @@ async function loadPosts() {
 
         // 기본 정렬은 최신순
         renderPosts();
+        renderRanking();
 
     } catch (error) {
 
@@ -192,6 +253,64 @@ async function loadPosts() {
         );
 
     }
+
+}
+
+
+// 게시글 내용 일부만 미리보기로 잘라주는 함수
+function makeExcerpt(content) {
+
+    if (!content) {
+
+        return "";
+
+    }
+
+    const oneLine =
+        content
+            .replace(/\s+/g, " ")
+            .trim();
+
+    if (oneLine.length <= 60) {
+
+        return oneLine;
+
+    }
+
+    return oneLine.slice(0, 60) + "…";
+
+}
+
+
+// 날짜 포맷
+function formatDate(timestamp) {
+
+    if (!timestamp) {
+
+        return "";
+
+    }
+
+    const date =
+        timestamp.toDate();
+
+    const month =
+        String(date.getMonth() + 1)
+            .padStart(2, "0");
+
+    const day =
+        String(date.getDate())
+            .padStart(2, "0");
+
+    const hours =
+        String(date.getHours())
+            .padStart(2, "0");
+
+    const minutes =
+        String(date.getMinutes())
+            .padStart(2, "0");
+
+    return `${month}.${day} ${hours}:${minutes}`;
 
 }
 
@@ -249,10 +368,10 @@ function renderPosts() {
             function(a, b) {
 
                 const likesA =
-                    a.likesCount || 0;
+                    a.likes || 0;
 
                 const likesB =
-                    b.likesCount || 0;
+                    b.likes || 0;
 
                 return likesB - likesA;
 
@@ -288,6 +407,8 @@ function renderPosts() {
             .toLowerCase()
             .trim();
 
+    let visibleCount = 0;
+
 
     sortedPosts.forEach(
         function(post) {
@@ -304,32 +425,25 @@ function renderPosts() {
 
             }
 
+            visibleCount++;
 
-            // 게시글 전체 영역
-            const postWrapper =
+
+            // 게시글 한 줄 (제목/미리보기 · 날짜/조회수 · 더보기)
+            const postRow =
                 document.createElement("div");
 
-            postWrapper.className =
-                "post-wrapper";
+            postRow.className =
+                "post-row";
 
 
-            // 게시글 테두리
-            const postElement =
+            // 제목 + 미리보기
+            const postCopy =
                 document.createElement("div");
 
-            postElement.className =
-                "post-item";
+            postCopy.className =
+                "post-copy";
 
 
-            // 제목 + 오른쪽 정보
-            const postHeader =
-                document.createElement("div");
-
-            postHeader.className =
-                "post-header";
-
-
-            // 제목
             const titleElement =
                 document.createElement("h3");
 
@@ -348,97 +462,51 @@ function renderPosts() {
             );
 
 
-            // 오른쪽 정보 영역
-            const postInfo =
+            const excerptElement =
+                document.createElement("p");
+
+            excerptElement.textContent =
+                (post.authorNickname
+                    ? post.authorNickname + " · "
+                    : "") +
+                makeExcerpt(post.content);
+
+
+            postCopy.appendChild(titleElement);
+            postCopy.appendChild(excerptElement);
+
+
+            // 날짜 + 조회수
+            const postMeta =
                 document.createElement("div");
 
-            postInfo.className =
-                "post-info";
+            postMeta.className =
+                "post-meta";
 
 
-            // 날짜
             const dateElement =
                 document.createElement("span");
 
-            dateElement.className =
-                "post-date";
+            dateElement.textContent =
+                formatDate(post.createdAt);
 
 
-            if (post.createdAt) {
-
-                const date =
-                    post.createdAt.toDate();
-
-                const year =
-                    date.getFullYear();
-
-                const month =
-                    String(
-                        date.getMonth() + 1
-                    ).padStart(2, "0");
-
-                const day =
-                    String(
-                        date.getDate()
-                    ).padStart(2, "0");
-
-                const hours =
-                    String(
-                        date.getHours()
-                    ).padStart(2, "0");
-
-                const minutes =
-                    String(
-                        date.getMinutes()
-                    ).padStart(2, "0");
-
-                dateElement.textContent =
-                    `${year}/${month}/${day}-${hours}:${minutes}`;
-
-            }
-
-
-            // 조회수
             const viewElement =
                 document.createElement("span");
 
-            viewElement.className =
-                "post-view-count";
-
             viewElement.textContent =
-                "조회 " +
-                (post.views || 0);
+                "조회 " + (post.views || 0);
 
 
-            postInfo.appendChild(
-                dateElement
-            );
-
-            postInfo.appendChild(
-                viewElement
-            );
+            postMeta.appendChild(dateElement);
+            postMeta.appendChild(viewElement);
 
 
-            postHeader.appendChild(
-                titleElement
-            );
-
-            postHeader.appendChild(
-                postInfo
-            );
+            postRow.appendChild(postCopy);
+            postRow.appendChild(postMeta);
 
 
-            postElement.appendChild(
-                postHeader
-            );
-
-
-            postWrapper.appendChild(
-                postElement
-            );
-
-
-            // 관리자 삭제 버튼
+            // 관리자 삭제 버튼 (더보기 자리)
             const user =
                 auth.currentUser;
 
@@ -447,20 +515,24 @@ function renderPosts() {
                 const userId =
                     user.email.split("@")[0];
 
-                if (
-                    userId === ADMIN_ID
-                ) {
+                if (userId === ADMIN_ID) {
 
                     const deleteButton =
                         document.createElement(
                             "button"
                         );
 
-                    deleteButton.textContent =
-                        "삭제";
+                    deleteButton.type =
+                        "button";
 
                     deleteButton.className =
-                        "post-delete-button";
+                        "more-button";
+
+                    deleteButton.title =
+                        "게시글 삭제";
+
+                    deleteButton.textContent =
+                        "✕";
 
 
                     deleteButton.addEventListener(
@@ -537,6 +609,7 @@ function renderPosts() {
 
 
                                 renderPosts();
+                                renderRanking();
 
 
                             } catch (error) {
@@ -556,21 +629,160 @@ function renderPosts() {
                     );
 
 
-                    postWrapper.appendChild(
+                    postRow.appendChild(
                         deleteButton
                     );
 
+                } else {
+
+                    // 더보기 칸 높이 유지를 위한 빈 자리
+                    postRow.appendChild(
+                        document.createElement("span")
+                    );
+
                 }
+
+            } else {
+
+                postRow.appendChild(
+                    document.createElement("span")
+                );
 
             }
 
 
             postList.appendChild(
-                postWrapper
+                postRow
             );
 
         }
     );
+
+
+    // 게시글이 하나도 없을 때 안내 문구
+    if (visibleCount === 0) {
+
+        const emptyState =
+            document.createElement("div");
+
+        emptyState.className =
+            "empty-state";
+
+        emptyState.textContent =
+            allPosts.length === 0
+                ? "아직 등록된 게시글이 없습니다."
+                : "검색 결과가 없습니다.";
+
+        postList.appendChild(emptyState);
+
+    }
+
+}
+
+
+// 오른쪽 사이드바 인기 게시글 카드
+function renderRanking() {
+
+    if (!rankingList) {
+
+        return;
+
+    }
+
+    rankingList.innerHTML = "";
+
+
+    const topPosts =
+        [...allPosts]
+            .sort(function(a, b) {
+
+                const likesA =
+                    a.likes || 0;
+
+                const likesB =
+                    b.likes || 0;
+
+                return likesB - likesA;
+
+            })
+            .slice(0, 5);
+
+
+    if (topPosts.length === 0) {
+
+        const emptyRanking =
+            document.createElement("p");
+
+        emptyRanking.className =
+            "ranking-empty";
+
+        emptyRanking.textContent =
+            "아직 인기 게시글이 없습니다.";
+
+        rankingList.appendChild(emptyRanking);
+
+    } else {
+
+        topPosts.forEach(
+            function(post, index) {
+
+                const rankButton =
+                    document.createElement("button");
+
+                rankButton.type =
+                    "button";
+
+                rankButton.addEventListener(
+                    "click",
+                    function() {
+
+                        window.location.href =
+                            "post.html?id=" +
+                            post.id;
+
+                    }
+                );
+
+
+                const rankNumber =
+                    document.createElement("b");
+
+                rankNumber.textContent =
+                    String(index + 1).padStart(2, "0");
+
+
+                const rankTitle =
+                    document.createElement("span");
+
+                rankTitle.textContent =
+                    post.title;
+
+
+                rankButton.appendChild(rankNumber);
+                rankButton.appendChild(rankTitle);
+
+                rankingList.appendChild(rankButton);
+
+            }
+        );
+
+    }
+
+
+    if (rankingUpdated) {
+
+        const now = new Date();
+
+        const hours =
+            String(now.getHours()).padStart(2, "0");
+
+        const minutes =
+            String(now.getMinutes()).padStart(2, "0");
+
+        rankingUpdated.textContent =
+            hours + ":" + minutes + " 기준";
+
+    }
 
 }
 
@@ -592,6 +804,19 @@ searchButton.addEventListener(
     function() {
 
         renderPosts();
+
+    }
+);
+
+searchInput.addEventListener(
+    "keydown",
+    function(event) {
+
+        if (event.key === "Enter") {
+
+            renderPosts();
+
+        }
 
     }
 );

@@ -1,0 +1,102 @@
+/* 디자인 철학: 광장 — 신문지 미색, 잉크 네이비, 얇은 편집 경계선으로 빠른 글 탐색을 돕는 단일 커뮤니티 포털. */
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Noto+Serif+KR:wght@500;600;700&display=swap');
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@theme inline { --font-sans: "Pretendard", "Apple SD Gothic Neo", sans-serif; --color-background: var(--background); --color-foreground: var(--foreground); --color-primary: var(--primary); --color-primary-foreground: var(--primary-foreground); --color-border: var(--border); }
+:root { --background:#ebebef; --foreground:#182031; --primary:#2457f5; --primary-foreground:#fff; --border:#c7c1b5; }
+* { box-sizing:border-box; }
+body { margin:0; min-width:320px; background:var(--background); color:var(--foreground); font-family:"Pretendard","Apple SD Gothic Neo",sans-serif; }
+button { border:0; background:none; color:inherit; font:inherit; cursor:pointer; } button:focus-visible { outline:2px solid #2457f5; outline-offset:3px; }
+.square-home { max-width:1600px; min-height:100vh; margin:0 auto; overflow:hidden; background:#f8f3e7; box-shadow:5px 6px 0 rgba(27,35,50,.12); }
+.masthead { display:flex; align-items:center; justify-content:space-between; height:74px; padding:0 34px; border-bottom:1px solid #bdb8ad; background:#fdf9f0; }.wordmark { padding:0; color:#8c4a2f; font-family:"Noto Serif KR",serif; font-size:26px; font-weight:700; letter-spacing:-.09em; }.search-field { display:flex; align-items:center; gap:10px; width:min(390px,35vw); padding:11px 14px; border:1px solid #bcb9b1; color:#777a82; text-align:left; font-size:13px; }.search-field > span { flex:1; }.masthead-actions { display:flex; align-items:center; gap:22px; margin-right:30px; }.notification-button { position:relative; padding:7px; color:#4f5661; }.notification-button i { position:absolute; top:4px; right:5px; width:5px; height:5px; border-radius:50%; background:#ef4d42; }.avatar-button { display:grid; width:28px; height:28px; place-items:center; border-radius:50%; background:#e3e9ff; color:#2457f5; font:11px "DM Mono",monospace; font-weight:700; }.write-button { display:inline-flex; align-items:center; justify-content:center; gap:7px; padding:11px 15px; border-radius:8px; background:#6d5bd0; color:#fff; font-size:13px; font-weight:800; transition:transform .16s cubic-bezier(.23,1,.32,1),filter .16s; }.write-button:hover { filter:brightness(.95); transform:translateY(-1px); }.write-button:active { transform:scale(.97); }.write-button.compact { padding:9px 12px; font-size:12px; }
+.main-navigation { display:flex; align-items:center; gap:4px; height:51px; padding:0 34px; border-bottom:1px solid #bdb8ad; background:#fdf9f0; }.main-navigation button { padding:8px 11px; color:#4e5560; font-size:13px; font-weight:600; white-space:nowrap; }.main-navigation button.selected { display:inline-flex; align-items:center; gap:6px; background:#e4ebfb; color:#2457f5; }.main-navigation .navigation-more { display:flex; align-items:center; margin-left:auto; }
+.community-layout { display:grid; grid-template-columns:205px minmax(480px,1fr) 267px; max-width:1460px; margin:0 auto; }.board-sidebar { padding:24px 18px; border-right:1px solid #c7c1b5; }.board-list button { display:flex; align-items:center; width:100%; padding:10px 9px; border-left:2px solid transparent; color:#515967; text-align:left; font-size:13px; }.board-list button:hover,.board-list button.active { border-left-color:#2457f5; background:#e6ebfb; color:#2457f5; font-weight:700; }
+.content-column { padding:24px; }.discussion-section { margin:0; }.post-table { border-top:2px solid #17233c; }.post-row { display:grid; grid-template-columns:minmax(0,1fr) 112px 20px; align-items:center; gap:8px; min-height:65px; padding:0 5px; border-bottom:1px solid #cfc9bd; }.post-copy { min-width:0; }.post-copy h3 { overflow:hidden; margin:0; font-family:"Noto Serif KR",serif; font-size:15px; font-weight:600; letter-spacing:-.06em; white-space:nowrap; text-overflow:ellipsis; }.post-copy p { margin:4px 0 0; color:#7e8187; font-size:10px; }.post-meta { display:flex; align-items:center; gap:11px; color:#8a8d91; font:10px "DM Mono",monospace; white-space:nowrap; }.post-meta span { display:inline-flex; align-items:center; gap:4px; }.more-button { padding:4px; color:#8a8d91; }
+.right-sidebar { padding:24px 18px 24px 0; }.welcome-card { display:grid; min-height:76px; place-items:center start; padding:17px; background:#6d5bd0; color:#fff; }.welcome-card > b { font-family:"Noto Serif KR",serif; font-size:17px; letter-spacing:-.08em; }.ranking-card { margin-top:19px; padding:17px; border:1px solid #c7c0b5; background:#fffdf7; }.ranking-card header { display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }.ranking-card h2 { display:flex; align-items:center; gap:6px; margin:0; font-family:"Noto Serif KR",serif; font-size:15px; }.ranking-card h2 svg { color:#ef693e; }.ranking-card time { color:#85878a; font-size:9px; }.ranking-card > button { display:grid; grid-template-columns:22px 1fr; align-items:center; gap:4px; width:100%; padding:7px 0; text-align:left; }.ranking-card > button b { color:#2457f5; font:10px "DM Mono",monospace; }.ranking-card > button span { overflow:hidden; font-size:11px; white-space:nowrap; text-overflow:ellipsis; }
+@media (max-width:900px) { .square-home { min-height:100vh; }.masthead { padding:0 18px; }.search-field { display:none; }.main-navigation { overflow-x:auto; padding:0 18px; }.main-navigation::-webkit-scrollbar { display:none; }.community-layout { grid-template-columns:1fr; }.board-sidebar,.right-sidebar { display:none; }.content-column { padding:18px; } }
+@media (max-width:560px) { .masthead { height:62px; }.wordmark { flex:0 0 auto; font-size:23px; }.search-field { display:flex; flex:1 1 auto; width:auto; max-width:140px; min-width:0; margin-left:12px; padding:7px 9px; font-size:11px; }.search-field > span { overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }.masthead-actions { flex:0 0 auto; gap:4px; margin-right:0; }.notification-button,.avatar-button { transform:translateX(-5px); }.write-button.compact { padding:9px; }.write-button.compact span { display:none; }.post-row { grid-template-columns:minmax(0,1fr) 18px; }.post-meta { display:none; }.main-navigation button { padding:8px 10px; } }
+@media (prefers-reduced-motion: no-preference) { .write-button { transition:transform .16s cubic-bezier(.23,1,.32,1),filter .16s; } }
+
+/* ============================================================
+   아래부터는 index.html / script.js가 실제로 동작하는 데 필요해서
+   추가한 보강 스타일입니다. 위쪽 원본 디자인 규칙은 건드리지 않았습니다.
+   ============================================================ */
+
+/* 헤더 검색창: 기존 CSS는 <span>을 기준으로 만들어져 있어서,
+   실제 입력이 가능한 <input>을 넣을 때 필요한 최소 스타일만 추가 */
+.search-field input {
+    flex: 1;
+    min-width: 0;
+    border: 0;
+    background: transparent;
+    outline: 0;
+    font: inherit;
+    color: inherit;
+}
+.search-field input::placeholder { color: #9a9d9f; }
+.search-field svg { flex-shrink: 0; color: #9a9d9f; }
+
+/* 로그인 전 헤더 버튼 (로그인 / 회원가입) */
+.auth-controls { display: flex; align-items: center; gap: 8px; }
+.login-button,
+.signup-button {
+    padding: 8px 12px;
+    border: 1px solid #c7c1b5;
+    border-radius: 6px;
+    background: #fdf9f0;
+    color: #4e5560;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+.login-button:hover,
+.signup-button:hover { background: #f1ede2; }
+
+/* 로그인 후: 아바타 옆 닉네임 / 로그아웃 */
+.user-summary { display: flex; align-items: center; gap: 8px; }
+.user-summary .user-name {
+    max-width: 110px;
+    overflow: hidden;
+    color: #4e5560;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+.logout-button {
+    padding: 6px 10px;
+    border: 1px solid #c7c1b5;
+    border-radius: 6px;
+    color: #8c4a2f;
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+.logout-button:hover { background: #f1ede2; }
+
+/* 정렬 셀렉트박스 (내비게이션 오른쪽) */
+#sort-select {
+    padding: 8px 10px;
+    border: 1px solid #c7c1b5;
+    border-radius: 6px;
+    background: #fdf9f0;
+    color: #4e5560;
+    font-size: 12px;
+}
+
+/* 게시글이 없을 때 / 검색 결과가 없을 때 */
+.post-table .empty-state {
+    padding: 70px 10px;
+    border-bottom: 1px solid #cfc9bd;
+    color: #9a9c9f;
+    text-align: center;
+    font-size: 13px;
+}
+
+/* 인기 게시글 카드에 순위가 없을 때 */
+.ranking-card .ranking-empty {
+    padding: 8px 0;
+    color: #9a9c9f;
+    font-size: 11px;
+}
